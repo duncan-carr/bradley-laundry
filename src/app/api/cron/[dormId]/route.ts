@@ -4,9 +4,9 @@ import { api } from "~/trpc/server";
 
 export async function GET(
   request: Request,
-  { params }: { params: { dormId: string } },
+  { params }: { params: Promise<{ dormId: string }> },
 ) {
-  const { dormId } = params;
+  const { dormId } = await params;
 
   // Validate the dormId
   if (!dormId || typeof dormId !== "string") {
