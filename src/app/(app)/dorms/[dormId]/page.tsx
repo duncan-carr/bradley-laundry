@@ -4,9 +4,9 @@ import { LaundryRoom } from "./laundry-room";
 export default async function DormPage({
   params,
 }: {
-  params: { dormId: string };
+  params: Promise<{ dormId: string }>;
 }) {
-  const dorm = locations.get(params.dormId);
+  const dorm = locations.get((await params).dormId);
 
   if (!dorm) {
     return (
