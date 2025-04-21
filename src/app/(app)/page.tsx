@@ -2,9 +2,7 @@ import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import {
   Card,
-  CardAction,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";

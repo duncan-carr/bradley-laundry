@@ -1,13 +1,6 @@
+import Link from "next/link";
 import { AppSidebar } from "~/components/app-sidebar";
 import { ModeToggle } from "~/components/theme-toggle";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "~/components/ui/breadcrumb";
 import {
   SidebarInset,
   SidebarProvider,
@@ -21,17 +14,7 @@ export default function Page({
     <SidebarProvider>
       <SidebarInset>
         <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4">
-          <Breadcrumb>
-            <BreadcrumbList>
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink href="#">Bradley Laundry</BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator className="hidden md:block" />
-              <BreadcrumbItem>
-                <BreadcrumbPage>Home</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+          <Link href="/">Bradley Laundry</Link>
 
           <div className="flex items-center gap-2">
             <ModeToggle />

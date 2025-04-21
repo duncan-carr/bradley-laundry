@@ -20,75 +20,75 @@ const data = {
   navMain: [
     {
       title: "Geisert Hall",
-      url: "#",
+      url: "/dorms/geisert",
       items: [
         {
           title: "Floor 2",
-          url: "#",
+          url: "/dorms/geisert/floor-2",
         },
         {
           title: "Floor 4",
-          url: "#",
+          url: "/dorms/geisert/floor-4",
         },
         {
           title: "Floor 6",
-          url: "#",
+          url: "/dorms/geisert/floor-6",
         },
         {
           title: "Floor 8",
-          url: "#",
+          url: "/dorms/geisert/floor-8",
         },
         {
           title: "Floor 10",
-          url: "#",
+          url: "/dorms/geisert/floor-10",
         },
       ],
     },
     {
       title: "Harper Hall",
-      url: "#",
+      url: "/dorms/harper",
     },
     {
       title: "Heitz Hall",
-      url: "#",
+      url: "/dorms/heitz",
       items: [
         {
           title: "Floor 1B",
-          url: "#",
+          url: "/dorms/heitz/floor-1b",
         },
         {
           title: "Floor 3B",
-          url: "#",
+          url: "/dorms/heitz/floor-3b",
         },
       ],
     },
     {
       title: "University Hall",
-      url: "#",
+      url: "/dorms/university",
     },
     {
       title: "Williams Hall",
-      url: "#",
+      url: "/dorms/williams",
       items: [
         {
           title: "Floor 1",
-          url: "#",
+          url: "/dorms/williams/floor-1",
         },
         {
           title: "Floor 2",
-          url: "#",
+          url: "/dorms/williams/floor-2",
         },
         {
           title: "Floor 3",
-          url: "#",
+          url: "/dorms/williams/floor-3",
         },
         {
           title: "Floor 4",
-          url: "#",
+          url: "/dorms/williams/floor-4",
         },
         {
           title: "Floor 5",
-          url: "#",
+          url: "/dorms/williams/floor-5",
         },
       ],
     },
