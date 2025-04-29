@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 export const locations = new Map([
   [
     "geisert",
@@ -79,6 +81,34 @@ export function getLocationForKey(key: string): {
   };
 }
 
+export function getKeyForLocation({
+  buildingName,
+  roomName,
+}: {
+  buildingName: string;
+  roomName?: string;
+}): string | undefined {
+  const building = buildingName.split(" ")[0]?.toLowerCase();
+
+  if (!building) {
+    throw new Error("Invalid building name");
+  }
+
+  const possibleLocations = locations.get(building);
+
+  if (!possibleLocations) {
+    throw new Error("Invalid building name");
+  }
+
+  if (!roomName) {
+    return possibleLocations.keys().next().value;
+  }
+
+  return Array.from(possibleLocations.entries()).find(
+    (loc) => roomName === loc[1],
+  )?.[0];
+}
+
 export function mapCscToMachineData(cscMachine: CSCGoResponse): MachineData {
   const status = cscMachine.available
     ? MachineStatus.AVAILABLE
@@ -145,22 +175,22 @@ export function getCurrentDayAndTimeBucket(
   return { dayOfWeek, timeBucket };
 }
 
+const TIMEZONE = "America/Chicago";
+
 export function mapMachineDataToSupabase(machine: MachineData) {
-  const now = new Date();
+  const now = DateTime.now().setZone(TIMEZONE);
   const finished_at =
     machine.status === "in-use"
-      ? new Date(now.getTime() + machine.timeRemaining * 60000).toISOString()
+      ? now.plus({ minutes: machine.timeRemaining }).toISO()
       : null;
 
   return {
     building_name: machine.location.buildingName,
     default_total_time: machine.defaultTotalTime,
-    // Assuming this is a new record so finished_at is initially null.
     finished_at,
     identifier: parseInt(machine.identifier),
     // Set last_update to the current time in ISO format
-    last_update: new Date().toISOString(),
-    // If licensePlate is empty, you can store it as null
+    last_update: now.toISO() ?? new Date().toISOString(),
     license_plate: machine.licensePlate || null,
     machine_type: machine.type,
     room_name: machine.location.roomName,
@@ -198,4 +228,60 @@ export function getMachineKey(location: MachineLocation): string | undefined {
     }
   }
   return undefined;
+}
+
+interface TimeRecordInput {
+  day_of_week: number;
+  room_key: string;
+  sample_count: number | null;
+  time_bucket: string;
+  total_count: number | null;
+}
+
+export interface HourlyAverage {
+  hour: string;
+  hour24: number;
+  average_usage: number;
+}
+
+function formatHourTo12Hour(hour: number): string {
+  if (hour === 0) return "12 AM";
+  if (hour === 12) return "12 PM";
+  if (hour < 12) return `${hour} AM`;
+  return `${hour - 12} PM`;
+}
+
+export function getHour24(time: string): number {
+  return parseInt(time.split(":")[0]!, 10);
+}
+
+export function aggregateToHourly(records: TimeRecordInput[]): HourlyAverage[] {
+  const hourlyAverages = new Map<number, { entries: number; total: number }>();
+
+  for (const record of records) {
+    const hour24 = getHour24(record.time_bucket);
+
+    const currentTotal = hourlyAverages.get(hour24) ?? { entries: 0, total: 0 };
+
+    hourlyAverages.delete(hour24);
+
+    hourlyAverages.set(hour24, {
+      entries: currentTotal.entries + 1,
+      total: currentTotal.total + (record.total_count ?? 0),
+    });
+  }
+
+  const unsorted = Array.from(hourlyAverages.entries()).map((i) => {
+    const hour24 = i[0];
+    const value = i[1];
+
+    return {
+      hour: formatHourTo12Hour(hour24),
+      hour24: hour24,
+      average_usage: value.total / (value.entries === 0 ? 1 : value.entries),
+    };
+  });
+
+  // Sort by 24-hour time
+  return unsorted.sort((a, b) => a.hour24 - b.hour24);
 }

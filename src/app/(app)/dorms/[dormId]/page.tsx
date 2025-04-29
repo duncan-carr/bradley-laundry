@@ -1,5 +1,6 @@
 import { locations } from "~/lib/laundry-util";
 import { LaundryRoom } from "./laundry-room";
+import { api } from "~/trpc/server";
 
 export default async function DormPage({
   params,
@@ -19,10 +20,18 @@ export default async function DormPage({
     );
   }
 
+  const usageData = await api.laundry.getUsage({
+    keys: Array.from(dorm.keys()),
+  });
+
   return (
     <main className="flex flex-col gap-6 p-6">
       {Array.from(dorm).map(([key]) => (
-        <LaundryRoom key={key} roomKey={key} />
+        <LaundryRoom
+          key={key}
+          roomKey={key}
+          usage={usageData.filter((entry) => entry.room_key === key)}
+        />
       ))}
     </main>
   );

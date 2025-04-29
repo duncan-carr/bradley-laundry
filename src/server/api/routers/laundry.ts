@@ -10,7 +10,58 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { supabase } from "~/server/database/supabase";
 
 export const laundryRouter = createTRPCRouter({
-  get: publicProcedure
+  getFromAPI: publicProcedure
+    .input(
+      z.object({
+        key: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      // const key = getKeyForLocation({
+      //   buildingName: input.building,
+      //   roomName: input.room,
+      // });
+
+      // if (!key) {
+      //   throw new Error("Invalid location");
+      // }
+
+      const response = await fetch(
+        `https://mycscgo.com/api/v1/location/c0a88120-c994-4581-8f6f-51f35533cf5c/room/${input.key}/machines`,
+      );
+
+      if (!response.ok) {
+        throw Error(`Could not update machines for key ${input.key}`);
+      }
+
+      const jsonMachines = await response.json();
+      const machines: MachineData[] =
+        jsonMachines.map(mapCscToMachineData) ?? [];
+
+      return machines;
+    }),
+  getUsage: publicProcedure
+    .input(
+      z.object({
+        keys: z.array(z.string()),
+      }),
+    )
+    .query(async ({ input }) => {
+      const timeBucket = getCurrentDayAndTimeBucket();
+
+      const { data: usageData, error } = await supabase
+        .from("usage_aggregates")
+        .select("*")
+        .eq("day_of_week", timeBucket.dayOfWeek)
+        .in("room_key", input.keys);
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      return usageData;
+    }),
+  getFromSupabase: publicProcedure
     .input(
       z
         .object({
