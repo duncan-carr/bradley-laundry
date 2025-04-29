@@ -267,7 +267,9 @@ export function aggregateToHourly(records: TimeRecordInput[]): HourlyAverage[] {
 
     hourlyAverages.set(hour24, {
       entries: currentTotal.entries + 1,
-      total: currentTotal.total + (record.total_count ?? 0),
+      total:
+        currentTotal.total +
+        (record.total_count ?? 0) / (record.sample_count ?? 1),
     });
   }
 
