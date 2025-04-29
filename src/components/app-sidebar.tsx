@@ -35,6 +35,14 @@ const data = {
       title: "Williams Hall",
       url: "/dorms/williams",
     },
+    {
+      title: "Singles",
+      url: "/dorms/singles",
+    },
+    {
+      title: "Student Apartment Complex",
+      url: "/dorms/sac",
+    },
   ],
 };
 

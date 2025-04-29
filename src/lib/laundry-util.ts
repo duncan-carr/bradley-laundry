@@ -30,6 +30,21 @@ export const locations = new Map([
     ]),
   ],
   ["university", new Map([["2320032-002", "University Hall"]])],
+  [
+    "singles",
+    new Map([
+      ["2320032-012", "Elmwood Hall"],
+      ["2320032-010", "Lovelace Hall"],
+      ["2320032-011", "Wendle Hall"],
+    ]),
+  ],
+  [
+    "sac",
+    new Map([
+      ["2320032-003", "Floor 2"],
+      ["2320032-023", "Floor 3"],
+    ]),
+  ],
 ]);
 
 export type MachineLocation = {

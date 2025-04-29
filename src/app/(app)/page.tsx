@@ -33,6 +33,16 @@ const buildings = [
     url: "/dorms/williams",
     rooms: 5,
   },
+  {
+    name: "Singles",
+    url: "/dorms/singles",
+    rooms: 3,
+  },
+  {
+    name: "Student Apartment Complex",
+    url: "/dorms/sac",
+    rooms: 2,
+  },
 ];
 
 export default async function Page() {
