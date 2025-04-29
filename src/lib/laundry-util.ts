@@ -47,6 +47,8 @@ export const locations = new Map([
   ],
 ]);
 
+const TIMEZONE = "America/Chicago";
+
 export type MachineLocation = {
   buildingName: string;
   roomName: string;
@@ -171,13 +173,13 @@ export type TimeBucket = {
 export function getCurrentDayAndTimeBucket(
   bucketSize: number = 15,
 ): TimeBucket {
-  const now = new Date();
+  const now = DateTime.now().setZone(TIMEZONE);
 
   // getDay() returns 0 (Sunday) to 6 (Saturday)
-  const dayOfWeek = now.getDay();
+  const dayOfWeek = now.weekday % 7;
 
-  const hour = now.getHours();
-  const minute = now.getMinutes();
+  const hour = now.hour;
+  const minute = now.minute;
 
   // Calculate the bucket's starting minute.
   const bucketMinute = Math.floor(minute / bucketSize) * bucketSize;
@@ -189,8 +191,6 @@ export function getCurrentDayAndTimeBucket(
 
   return { dayOfWeek, timeBucket };
 }
-
-const TIMEZONE = "America/Chicago";
 
 export function mapMachineDataToSupabase(machine: MachineData) {
   const now = DateTime.now().setZone(TIMEZONE);

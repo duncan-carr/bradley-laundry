@@ -120,6 +120,9 @@ export const laundryRouter = createTRPCRouter({
       await supabase.from("machines").upsert(supabaseMachines);
 
       const bucket = getCurrentDayAndTimeBucket();
+
+      console.log("Calculated current time bucket as", JSON.stringify(bucket));
+
       const machinesInUse = countMachinesInUse(machines);
 
       const { data } = await supabase
