@@ -47,7 +47,7 @@ const buildings = [
 
 export default async function Page() {
   return (
-    <main className="p-6">
+    <main className="px-6">
       <a
         href="https://github.com/duncan-carr/bradley-laundry"
         target="_blank"
