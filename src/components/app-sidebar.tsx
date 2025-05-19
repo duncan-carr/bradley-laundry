@@ -1,8 +1,11 @@
+import { GitBranch } from "lucide-react";
+import Link from "next/link";
 import * as React from "react";
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -67,6 +70,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <SidebarMenuButton asChild>
+          <Link className="text-muted-foreground" href="/changelog">
+            <GitBranch />
+            Changelog
+          </Link>
+        </SidebarMenuButton>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
