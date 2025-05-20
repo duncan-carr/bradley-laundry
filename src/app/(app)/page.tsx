@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { WelcomeDialog } from "~/components/welcome-dialog";
 
 const buildings = [
   {
@@ -47,7 +48,7 @@ const buildings = [
 
 export default async function Page() {
   return (
-    <main className="px-6">
+    <main className="p-6">
       <a
         href="https://github.com/duncan-carr/bradley-laundry"
         target="_blank"
@@ -62,12 +63,15 @@ export default async function Page() {
         Do your laundry the smart way
       </h1>
       <p className="my-2 max-w-[36rem] text-lg font-light">
-        Easily view all laundry machines in your building to efficiently plan
-        your laundry. Students deserve to have a better laundry experience.
+        Select your building and your floor number to let us find your closest
+        open machine for you, or select your building to see all machines.
       </p>
-      <h3 className="text-2xl font-semibold">
-        Select your building to get started...
-      </h3>
+
+      <div className="py-2 pb-10">
+        <WelcomeDialog />
+      </div>
+
+      <h3 className="text-2xl font-semibold">Or select your building...</h3>
       <section className="flex flex-wrap gap-4 py-6">
         {buildings.map((building) => (
           <Link className="w-80" key={building.name} href={building.url}>

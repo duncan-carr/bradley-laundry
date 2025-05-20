@@ -1,4 +1,27 @@
 import { DateTime } from "luxon";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+interface LocationState {
+  building: string | undefined;
+  floor: string | undefined;
+  setBuilding: (building: string | undefined) => void;
+  setFloor: (floor: string | undefined) => void;
+}
+
+export const useLocationStore = create<LocationState>()(
+  persist(
+    (set) => ({
+      building: undefined,
+      floor: undefined,
+      setBuilding: (building: string | undefined) => set({ building }),
+      setFloor: (floor: string | undefined) => set({ floor }),
+    }),
+    {
+      name: "location-storage",
+    },
+  ),
+);
 
 export const locations = new Map([
   [
