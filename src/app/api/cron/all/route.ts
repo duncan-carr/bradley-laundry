@@ -6,18 +6,16 @@ import { api } from "~/trpc/server";
 
 export async function GET() {
   try {
-    // Loop through each dorm in the locations Map.
     for (const building of campus
       .getAllBuildings()
-      .filter((b) => b.isParentBuilding(campus))) {
+      .filter((b) => !b.isParentBuilding(campus))) {
       console.log(`Cron job started for ${building.displayName}...`);
 
-      // Loop through each key in the dorm Map.
       for (const floor of building.getLaundryFloors()) {
         console.log(
           `Processing ${floor.laundryRoomId} (${floor.displayName}) for ${building.displayName}`,
         );
-        // Call your TRPC method to update the laundry machine data (or perform another action)
+
         await api.laundry.update({ key: floor.laundryRoomId });
         console.log(`Updated key ${floor.displayName} successfully`);
       }

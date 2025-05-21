@@ -8,7 +8,6 @@ export async function GET(
 ) {
   const { dormId } = await params;
 
-  // Validate the dormId
   if (!dormId || typeof dormId !== "string") {
     return NextResponse.json(
       { status: "error", message: "Invalid dormId parameter" },
@@ -17,27 +16,23 @@ export async function GET(
   }
 
   try {
-    // Place your cron job logic here.
-    // For example, you could call some service functions:
-    // await processDormCronJob(dormId);
+    console.log(`Cron job started for building with ID: ${dormId}`);
 
-    console.log(`Cron job started for dormId: ${dormId}`);
-    // Simulate processing
-    const dorm = campus.getBuilding({ id: dormId });
+    const building = campus.getBuilding({ id: dormId });
 
-    if (!dorm) {
+    if (!building) {
       return NextResponse.json(
         {
           status: "error",
-          message: `Dorm with ID ${dormId} not found`,
+          message: `Building with ID ${dormId} not found`,
         },
         { status: 404 },
       );
     }
 
-    for (const floor of dorm.getLaundryFloors()) {
+    for (const floor of building.getLaundryFloors()) {
       console.log(`Processing ${floor.laundryRoomId}: ${floor.displayName}`);
-      // Simulate processing each item
+
       await api.laundry.update({ key: floor.laundryRoomId });
       console.log(`Updated ${floor.laundryRoomId} successfully`);
     }
