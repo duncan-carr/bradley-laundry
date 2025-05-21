@@ -7,44 +7,18 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { WelcomeDialog } from "~/components/welcome-dialog";
+import { campus } from "~/lib/new-util";
 
-const buildings = [
-  {
-    name: "Geisert Hall",
-    url: "/dorms/geisert",
-    rooms: 5,
-  },
-  {
-    name: "Harper Hall",
-    url: "/dorms/harper",
-    rooms: 1,
-  },
-  {
-    name: "Heitz Hall",
-    url: "/dorms/heitz",
-    rooms: 2,
-  },
-  {
-    name: "University Hall",
-    url: "/dorms/university",
-    rooms: 1,
-  },
-  {
-    name: "Williams Hall",
-    url: "/dorms/williams",
-    rooms: 5,
-  },
-  {
-    name: "Singles",
-    url: "/dorms/singles",
-    rooms: 3,
-  },
-  {
-    name: "Student Apartment Complex",
-    url: "/dorms/sac",
-    rooms: 2,
-  },
-];
+const buildings = campus
+  .getAllBuildings()
+  .filter((b) => !b.isParentBuilding(campus))
+  .map((b) => {
+    return {
+      name: b.displayName,
+      url: `/dorms/${b.id}`,
+      rooms: b.getLaundryFloors().length,
+    };
+  });
 
 export default async function Page() {
   return (

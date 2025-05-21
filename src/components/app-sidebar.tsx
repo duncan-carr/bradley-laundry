@@ -14,39 +14,18 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "~/components/ui/sidebar";
+import { campus } from "~/lib/new-util";
 
-// This is sample data.
 const data = {
-  navMain: [
-    {
-      title: "Geisert Hall",
-      url: "/dorms/geisert",
-    },
-    {
-      title: "Harper Hall",
-      url: "/dorms/harper",
-    },
-    {
-      title: "Heitz Hall",
-      url: "/dorms/heitz",
-    },
-    {
-      title: "University Hall",
-      url: "/dorms/university",
-    },
-    {
-      title: "Williams Hall",
-      url: "/dorms/williams",
-    },
-    {
-      title: "Singles",
-      url: "/dorms/singles",
-    },
-    {
-      title: "Student Apartment Complex",
-      url: "/dorms/sac",
-    },
-  ],
+  navMain: campus
+    .getAllBuildings()
+    .filter((b) => !b.isParentBuilding(campus))
+    .map((b) => {
+      return {
+        title: b.displayName,
+        url: `/dorms/${b.id}`,
+      };
+    }),
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
