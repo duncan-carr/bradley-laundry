@@ -15,7 +15,7 @@ export default async function ChangeLog() {
     const sanitizedHtml = insane(parsedHtml);
 
     return (
-      <div className="px-6">
+      <div className="p-6">
         <div
           className="prose prose-slate dark:prose-invert"
           dangerouslySetInnerHTML={{
