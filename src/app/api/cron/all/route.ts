@@ -1,32 +1,28 @@
 // app/api/cron/route.ts
 
 import { NextResponse } from "next/server";
-import { locations } from "~/lib/laundry-util";
+import { campus } from "~/lib/new-util";
 import { api } from "~/trpc/server";
 
 export async function GET() {
   try {
     // Loop through each dorm in the locations Map.
-    for (const [dormId, dorm] of locations.entries()) {
-      console.log(`Cron job started for dormId: ${dormId}`);
-
-      // Check that the dorm has a valid inner Map.
-      if (!dorm) {
-        console.warn(`Dorm with ID ${dormId} not found`);
-        continue;
-      }
+    for (const building of campus
+      .getAllBuildings()
+      .filter((b) => b.isParentBuilding(campus))) {
+      console.log(`Cron job started for ${building.displayName}...`);
 
       // Loop through each key in the dorm Map.
-      for (const [key, value] of dorm.entries()) {
+      for (const floor of building.getLaundryFloors()) {
         console.log(
-          `Processing key: ${key} (value: ${value}) for dormId: ${dormId}`,
+          `Processing ${floor.laundryRoomId} (${floor.displayName}) for ${building.displayName}`,
         );
         // Call your TRPC method to update the laundry machine data (or perform another action)
-        await api.laundry.update({ key });
-        console.log(`Updated key ${key} successfully`);
+        await api.laundry.update({ key: floor.laundryRoomId });
+        console.log(`Updated key ${floor.displayName} successfully`);
       }
 
-      console.log(`Cron job completed for dormId: ${dormId}`);
+      console.log(`Cron job completed for ${building.displayName}`);
     }
 
     return NextResponse.json(

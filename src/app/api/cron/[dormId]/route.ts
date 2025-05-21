@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { locations } from "~/lib/laundry-util";
+import { campus } from "~/lib/new-util";
 import { api } from "~/trpc/server";
 
 export async function GET(
@@ -23,7 +23,7 @@ export async function GET(
 
     console.log(`Cron job started for dormId: ${dormId}`);
     // Simulate processing
-    const dorm = locations.get(dormId);
+    const dorm = campus.getBuilding({ id: dormId });
 
     if (!dorm) {
       return NextResponse.json(
@@ -35,11 +35,11 @@ export async function GET(
       );
     }
 
-    for (const [key, value] of dorm) {
-      console.log(`Processing ${key}: ${value}`);
+    for (const floor of dorm.getLaundryFloors()) {
+      console.log(`Processing ${floor.laundryRoomId}: ${floor.displayName}`);
       // Simulate processing each item
-      await api.laundry.update({ key });
-      console.log(`Updated ${key} successfully`);
+      await api.laundry.update({ key: floor.laundryRoomId });
+      console.log(`Updated ${floor.laundryRoomId} successfully`);
     }
 
     console.log(`Cron job completed for dormId: ${dormId}`);

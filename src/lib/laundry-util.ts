@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { campus } from "./new-util";
 
 interface LocationState {
   building: string | undefined;
@@ -22,53 +23,6 @@ export const useLocationStore = create<LocationState>()(
     },
   ),
 );
-
-export const locations = new Map([
-  [
-    "geisert",
-    new Map([
-      ["2320032-013", "Floor 2"],
-      ["2320032-019", "Floor 4"],
-      ["2320032-020", "Floor 6"],
-      ["2320032-021", "Floor 8"],
-      ["2320032-022", "Floor 10"],
-    ]),
-  ],
-  ["harper", new Map([["2320032-009", "Harper Hall"]])],
-  [
-    "heitz",
-    new Map([
-      ["2320032-007", "Floor 1B"],
-      ["2320032-018", "Floor 3B"],
-    ]),
-  ],
-  [
-    "williams",
-    new Map([
-      ["2320032-001", "Floor 1"],
-      ["2320032-014", "Floor 2"],
-      ["2320032-015", "Floor 3"],
-      ["2320032-016", "Floor 4"],
-      ["2320032-017", "Floor 5"],
-    ]),
-  ],
-  ["university", new Map([["2320032-002", "University Hall"]])],
-  [
-    "singles",
-    new Map([
-      ["2320032-012", "Elmwood Hall"],
-      ["2320032-010", "Lovelace Hall"],
-      ["2320032-011", "Wendle Hall"],
-    ]),
-  ],
-  [
-    "sac",
-    new Map([
-      ["2320032-003", "Floor 2"],
-      ["2320032-023", "Floor 3"],
-    ]),
-  ],
-]);
 
 const TIMEZONE = "America/Chicago";
 
@@ -107,11 +61,16 @@ export function getLocationForKey(key: string): {
   buildingName: string;
   roomName: string;
 } {
-  for (const [location, rooms] of locations) {
-    if (rooms.has(key)) {
+  for (const building of campus
+    .getAllBuildings()
+    .filter((b) => !b.isParentBuilding(campus))) {
+    const floor = building
+      .getLaundryFloors()
+      .find((f) => f.laundryRoomId === key);
+    if (floor) {
       return {
-        buildingName: `${location.slice(0, 1).toUpperCase() + location.slice(1)} Hall`,
-        roomName: rooms.get(key) ?? "Unknown Room",
+        buildingName: building.displayName,
+        roomName: floor.displayName,
       };
     }
   }
@@ -119,34 +78,6 @@ export function getLocationForKey(key: string): {
     buildingName: "Unknown Building",
     roomName: "Unknown Room",
   };
-}
-
-export function getKeyForLocation({
-  buildingName,
-  roomName,
-}: {
-  buildingName: string;
-  roomName?: string;
-}): string | undefined {
-  const building = buildingName.split(" ")[0]?.toLowerCase();
-
-  if (!building) {
-    throw new Error("Invalid building name");
-  }
-
-  const possibleLocations = locations.get(building);
-
-  if (!possibleLocations) {
-    throw new Error("Invalid building name");
-  }
-
-  if (!roomName) {
-    return possibleLocations.keys().next().value;
-  }
-
-  return Array.from(possibleLocations.entries()).find(
-    (loc) => roomName === loc[1],
-  )?.[0];
 }
 
 export function mapCscToMachineData(cscMachine: CSCGoResponse): MachineData {
@@ -237,35 +168,6 @@ export function mapMachineDataToSupabase(machine: MachineData) {
       : "in-use") as "available" | "in-use",
     time_remaining: machine.timeRemaining,
   };
-}
-
-/**
- * Returns the machine key that corresponds to a given building and room.
- *
- * For example, given MachineLocation:
- * { buildingName: "Geisert Hall", roomName: "Floor 2" }
- * the function returns "2320032-013".
- *
- * @param location - The building and room information.
- * @returns The machine key if found, or undefined if no match exists.
- */
-export function getMachineKey(location: MachineLocation): string | undefined {
-  // Normalize the input building name for simple matching.
-  const normalizedBuildingName = location.buildingName.toLowerCase();
-
-  for (const [buildingKey, roomsMap] of locations.entries()) {
-    // Check if the normalized building name includes the key.
-    // For example, "geisert hall" includes "geisert".
-    if (normalizedBuildingName.includes(buildingKey)) {
-      // Loop over each room mapping in the building's rooms map.
-      for (const [machineKey, roomLabel] of roomsMap.entries()) {
-        if (roomLabel.toLowerCase() === location.roomName.toLowerCase()) {
-          return machineKey;
-        }
-      }
-    }
-  }
-  return undefined;
 }
 
 interface TimeRecordInput {

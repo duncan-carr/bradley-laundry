@@ -1,15 +1,15 @@
-import { locations } from "~/lib/laundry-util";
 import { LaundryRoom } from "./laundry-room";
 import { api } from "~/trpc/server";
+import { campus } from "~/lib/new-util";
 
 export default async function DormPage({
   params,
 }: {
   params: Promise<{ dormId: string }>;
 }) {
-  const dorm = locations.get((await params).dormId);
+  const building = campus.getBuilding({ id: (await params).dormId });
 
-  if (!dorm) {
+  if (!building) {
     return (
       <main className="p-6">
         <h1 className="mt-4 text-4xl font-bold text-pretty">Error 404</h1>
@@ -21,16 +21,18 @@ export default async function DormPage({
   }
 
   const usageData = await api.laundry.getUsage({
-    keys: Array.from(dorm.keys()),
+    keys: building.getLaundryFloors().map((floor) => floor.laundryRoomId),
   });
 
   return (
     <main className="flex flex-col gap-6 p-6">
-      {Array.from(dorm).map(([key]) => (
+      {building.getLaundryFloors().map((laundryFloor) => (
         <LaundryRoom
-          key={key}
-          roomKey={key}
-          usage={usageData.filter((entry) => entry.room_key === key)}
+          key={laundryFloor.laundryRoomId}
+          roomKey={laundryFloor.laundryRoomId}
+          usage={usageData.filter(
+            (entry) => entry.room_key === laundryFloor.laundryRoomId,
+          )}
         />
       ))}
     </main>

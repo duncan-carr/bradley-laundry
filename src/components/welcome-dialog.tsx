@@ -14,24 +14,15 @@ import { Label } from "~/components/ui/label";
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
 import { useState } from "react";
 import { useLocationStore } from "~/lib/laundry-util";
-
-const locations = new Map<string, string[]>([
-  ["Geisert Hall", ["2", "3", "4", "5", "6", "7", "8", "9", "10"]],
-  ["Harper Hall", ["1", "2", "3", "4", "5", "6", "7"]],
-  ["Williams Hall", ["1", "2", "3", "4", "5"]],
-  ["University Hall", ["Ground", "1", "2", "3", "4"]],
-  ["Heitz Hall", ["Ground", "1", "2", "3", "4"]],
-  ["Singles Buildings", ["Elmwood", "Lovelace", "Wendle"]],
-  ["Student Apartment Complex", ["1", "2", "3", "4", "5"]],
-]);
-
-const buildings = Array.from(locations.keys());
+import { campus } from "~/lib/new-util";
 
 export function WelcomeDialog() {
   const [open, setOpen] = useState(false);
@@ -43,7 +34,7 @@ export function WelcomeDialog() {
   });
 
   const availableFloors = formState.building
-    ? (locations.get(formState.building) ?? [])
+    ? (campus.getBuilding({ id: formState.building })?.getFloors() ?? [])
     : [];
 
   const handleSave = () => {
@@ -100,11 +91,24 @@ export function WelcomeDialog() {
                 <SelectValue placeholder="Select a building" />
               </SelectTrigger>
               <SelectContent>
-                {buildings.map((building) => (
-                  <SelectItem key={building} value={building}>
-                    {building}
+                {campus.getAllBuildings(false).map((building) => (
+                  <SelectItem key={building.id} value={building.id}>
+                    {building.displayName}
                   </SelectItem>
                 ))}
+
+                {campus.getAllParentBuildings().map((parent) => {
+                  return (
+                    <SelectGroup key={parent.id}>
+                      <SelectLabel>{parent.displayName}</SelectLabel>
+                      {parent.getSubBuildings(campus).map((bldg) => (
+                        <SelectItem key={bldg.id} value={bldg.id}>
+                          {bldg.displayName}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  );
+                })}
               </SelectContent>
             </Select>
           </div>
@@ -118,8 +122,8 @@ export function WelcomeDialog() {
                 </SelectTrigger>
                 <SelectContent>
                   {availableFloors.map((floor) => (
-                    <SelectItem key={floor} value={floor}>
-                      {floor}
+                    <SelectItem key={floor.id} value={floor.id.toString()}>
+                      {floor.displayName}
                     </SelectItem>
                   ))}
                 </SelectContent>
