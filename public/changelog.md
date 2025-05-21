@@ -6,6 +6,7 @@
   - Finding closest laundry rooms to user residence
   - Finding the closest available washer/dryer to user residence
   - Majority of API requests to a database compared to the laundry API
+- Each laundry room now has the header as an anchor tag
 
 ### May 19, 2025: Average Usage Charts Reset
 

@@ -6,9 +6,11 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
-import { aggregateToHourly, getLocationForKey } from "~/lib/laundry-util";
+import { aggregateToHourly } from "~/lib/laundry-util";
 import { api } from "~/trpc/server";
 import { UsageChart } from "./usage-chart";
+import { campus } from "~/lib/new-util";
+import Link from "next/link";
 
 type UsageData = {
   day_of_week: number;
@@ -30,12 +32,21 @@ export async function LaundryRoom({
   });
 
   const chartData = aggregateToHourly(usage);
+  const floor = campus.getFloorFromLaundryRoomId({ id: roomKey });
 
-  const location = getLocationForKey(roomKey);
+  if (!floor) {
+    return (
+      <p className="text-red-500">
+        Error: Unable to locate floor with laundry room ID {roomKey}.
+      </p>
+    );
+  }
 
   return (
-    <section className="flex flex-col gap-4">
-      <h3 className="text-lg font-bold">{location.roomName}</h3>
+    <section className="flex flex-col gap-4" id={floor.id.toString()}>
+      <Link href={`#${floor.id.toString()}`} className="text-lg font-bold">
+        {floor.displayName}
+      </Link>
       <div className="flex flex-wrap gap-4">
         <UsageChart chartData={chartData} />
         {machines.map((machine) => {

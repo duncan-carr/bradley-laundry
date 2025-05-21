@@ -144,6 +144,19 @@ class CampusLaundry {
       building.isParentBuilding(this),
     );
   }
+
+  getFloorFromLaundryRoomId({ id }: { id: string }): LaundryFloor | undefined {
+    const nonParentBuildings = this.getAllBuildings().filter(
+      (b) => !b.isParentBuilding(this),
+    );
+
+    for (const building of nonParentBuildings) {
+      for (const laundryFloor of building.getLaundryFloors()) {
+        if (laundryFloor.laundryRoomId === id) return laundryFloor;
+      }
+    }
+    return undefined;
+  }
 }
 
 export const campus = new CampusLaundry();
