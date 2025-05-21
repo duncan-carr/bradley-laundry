@@ -1,4 +1,4 @@
-interface Floor {
+export interface Floor {
   id: number;
   displayName: string;
   hasLaundry: boolean;
@@ -12,7 +12,7 @@ interface LaundryFloor {
   laundryRoomId: string;
 }
 
-class Building {
+export class Building {
   private floors: Map<number, Floor>;
 
   constructor(
@@ -145,14 +145,19 @@ class CampusLaundry {
     );
   }
 
-  getFloorFromLaundryRoomId({ id }: { id: string }): LaundryFloor | undefined {
+  getLocationForLaundryKey({
+    id,
+  }: {
+    id: string;
+  }): { building: Building; floor: Floor } | undefined {
     const nonParentBuildings = this.getAllBuildings().filter(
       (b) => !b.isParentBuilding(this),
     );
 
     for (const building of nonParentBuildings) {
       for (const laundryFloor of building.getLaundryFloors()) {
-        if (laundryFloor.laundryRoomId === id) return laundryFloor;
+        if (laundryFloor.laundryRoomId === id)
+          return { building, floor: laundryFloor };
       }
     }
     return undefined;

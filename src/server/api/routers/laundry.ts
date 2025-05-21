@@ -1,7 +1,7 @@
 import { z } from "zod";
 import {
-  countMachinesInUse,
   getCurrentDayAndTimeBucket,
+  MachineStatus,
   mapCscToMachineData,
   mapMachineDataToSupabase,
   type MachineData,
@@ -17,15 +17,6 @@ export const laundryRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      // const key = getKeyForLocation({
-      //   buildingName: input.building,
-      //   roomName: input.room,
-      // });
-
-      // if (!key) {
-      //   throw new Error("Invalid location");
-      // }
-
       const response = await fetch(
         `https://mycscgo.com/api/v1/location/c0a88120-c994-4581-8f6f-51f35533cf5c/room/${input.key}/machines`,
       );
@@ -123,7 +114,9 @@ export const laundryRouter = createTRPCRouter({
 
       console.log("Calculated current time bucket as", JSON.stringify(bucket));
 
-      const machinesInUse = countMachinesInUse(machines);
+      const machinesInUse = machines.filter(
+        (machine) => machine.status === MachineStatus.IN_USE,
+      ).length;
 
       const { data } = await supabase
         .from("usage_aggregates")

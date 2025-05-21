@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { campus } from "./new-util";
+import { Building, campus, type Floor } from "./new-util";
 
 interface LocationState {
   building: string | undefined;
@@ -27,8 +27,8 @@ export const useLocationStore = create<LocationState>()(
 const TIMEZONE = "America/Chicago";
 
 export type MachineLocation = {
-  buildingName: string;
-  roomName: string;
+  building: Building;
+  floor: Floor;
 };
 
 export enum MachineStatus {
@@ -52,34 +52,6 @@ export type MachineData = {
   licensePlate: string;
 };
 
-export function countMachinesInUse(machines: MachineData[]) {
-  return machines.filter((machine) => machine.status === MachineStatus.IN_USE)
-    .length;
-}
-
-export function getLocationForKey(key: string): {
-  buildingName: string;
-  roomName: string;
-} {
-  for (const building of campus
-    .getAllBuildings()
-    .filter((b) => !b.isParentBuilding(campus))) {
-    const floor = building
-      .getLaundryFloors()
-      .find((f) => f.laundryRoomId === key);
-    if (floor) {
-      return {
-        buildingName: building.displayName,
-        roomName: floor.displayName,
-      };
-    }
-  }
-  return {
-    buildingName: "Unknown Building",
-    roomName: "Unknown Room",
-  };
-}
-
 export function mapCscToMachineData(cscMachine: CSCGoResponse): MachineData {
   const status = cscMachine.available
     ? MachineStatus.AVAILABLE
@@ -87,8 +59,7 @@ export function mapCscToMachineData(cscMachine: CSCGoResponse): MachineData {
   const timeRemaining = cscMachine.timeRemaining;
   const defaultTotalTime = cscMachine.type === "washer" ? 30 : 45;
   const identifier = cscMachine.stickerNumber.toString();
-  const roomKey = cscMachine.roomId;
-  const location = getLocationForKey(roomKey);
+  const location = campus.getLocationForLaundryKey({ id: cscMachine.roomId })!;
 
   return {
     identifier,
@@ -154,7 +125,7 @@ export function mapMachineDataToSupabase(machine: MachineData) {
       : null;
 
   return {
-    building_name: machine.location.buildingName,
+    building_name: machine.location.building.displayName,
     default_total_time: machine.defaultTotalTime,
     finished_at,
     identifier: parseInt(machine.identifier),
@@ -162,7 +133,7 @@ export function mapMachineDataToSupabase(machine: MachineData) {
     last_update: now.toISO() ?? new Date().toISOString(),
     license_plate: machine.licensePlate || null,
     machine_type: machine.type,
-    room_name: machine.location.roomName,
+    room_name: machine.location.floor.displayName,
     status: (machine.status === MachineStatus.AVAILABLE
       ? "available"
       : "in-use") as "available" | "in-use",

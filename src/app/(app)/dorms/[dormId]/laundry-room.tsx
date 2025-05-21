@@ -32,9 +32,9 @@ export async function LaundryRoom({
   });
 
   const chartData = aggregateToHourly(usage);
-  const floor = campus.getFloorFromLaundryRoomId({ id: roomKey });
+  const location = campus.getLocationForLaundryKey({ id: roomKey });
 
-  if (!floor) {
+  if (!location) {
     return (
       <p className="text-red-500">
         Error: Unable to locate floor with laundry room ID {roomKey}.
@@ -43,9 +43,12 @@ export async function LaundryRoom({
   }
 
   return (
-    <section className="flex flex-col gap-4" id={floor.id.toString()}>
-      <Link href={`#${floor.id.toString()}`} className="text-lg font-bold">
-        {floor.displayName}
+    <section className="flex flex-col gap-4" id={location.floor.id.toString()}>
+      <Link
+        href={`#${location.floor.id.toString()}`}
+        className="text-lg font-bold"
+      >
+        {location.floor.displayName}
       </Link>
       <div className="flex flex-wrap gap-4">
         <UsageChart chartData={chartData} />
