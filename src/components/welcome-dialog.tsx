@@ -24,7 +24,23 @@ import { useState } from "react";
 import { useLocationStore } from "~/lib/laundry-util";
 import { campus } from "~/lib/new-util";
 
-export function WelcomeDialog() {
+type ButtonVariants =
+  | "link"
+  | "default"
+  | "destructive"
+  | "outline"
+  | "secondary"
+  | "ghost"
+  | null
+  | undefined;
+
+export function WelcomeDialog({
+  variant = "default",
+  text = "Get Started",
+}: {
+  variant?: ButtonVariants;
+  text?: string;
+}) {
   const [open, setOpen] = useState(false);
   const { building, floor, setBuilding, setFloor } = useLocationStore();
 
@@ -70,7 +86,7 @@ export function WelcomeDialog() {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button>Get Started</Button>
+        <Button variant={variant}>{text}</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -131,8 +147,26 @@ export function WelcomeDialog() {
             </div>
           )}
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex flex-row justify-between">
+          {(building || floor) && (
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={() => {
+                setBuilding(undefined);
+                setFloor(undefined);
+                setFormState({
+                  building: "",
+                  floor: "",
+                });
+              }}
+            >
+              Delete
+            </Button>
+          )}
+
           <Button
+            size="sm"
             onClick={handleSave}
             disabled={!formState.building || !formState.floor}
           >

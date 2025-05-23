@@ -57,7 +57,7 @@ export class Building {
     });
   }
 
-  getFloorWithLaundry(currentFloorId: number): Floor | null {
+  getClosestLaundryFloor(currentFloorId: number): Floor | null {
     const currentFloor = this.floors.get(currentFloorId);
     if (!currentFloor) return null;
 

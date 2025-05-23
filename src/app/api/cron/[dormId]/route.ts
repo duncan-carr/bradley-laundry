@@ -2,10 +2,7 @@ import { NextResponse } from "next/server";
 import { campus } from "~/lib/new-util";
 import { api } from "~/trpc/server";
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ dormId: string }> },
-) {
+export async function GET({ params }: { params: Promise<{ dormId: string }> }) {
   const { dormId } = await params;
 
   if (!dormId || typeof dormId !== "string") {

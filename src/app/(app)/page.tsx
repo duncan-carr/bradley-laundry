@@ -1,12 +1,13 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import GetStarted from "~/components/get-started";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
-import { WelcomeDialog } from "~/components/welcome-dialog";
+
 import { campus } from "~/lib/new-util";
 
 const buildings = campus
@@ -33,17 +34,8 @@ export default async function Page() {
         </p>{" "}
         <ArrowRight className="scale-75" />
       </a>
-      <h1 className="mt-4 text-4xl font-bold text-pretty">
-        Do your laundry the smart way
-      </h1>
-      <p className="my-2 max-w-[36rem] text-lg font-light">
-        Select your building and your floor number to let us find your closest
-        open machine for you, or select your building to see all machines.
-      </p>
 
-      <div className="py-2 pb-10">
-        <WelcomeDialog />
-      </div>
+      <GetStarted />
 
       <h3 className="text-2xl font-semibold">Or select your building...</h3>
       <section className="flex flex-wrap gap-4 py-6">

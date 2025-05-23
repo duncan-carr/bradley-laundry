@@ -1,5 +1,3 @@
-// app/api/cron/route.ts
-
 import { NextResponse } from "next/server";
 import { campus } from "~/lib/new-util";
 import { api } from "~/trpc/server";
