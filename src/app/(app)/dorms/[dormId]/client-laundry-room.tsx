@@ -1,3 +1,6 @@
+"use client";
+
+import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -6,32 +9,24 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
-import { aggregateToHourly } from "~/lib/laundry-util";
-import { api } from "~/trpc/server";
-import { UsageChart } from "./usage-chart";
+import { Skeleton } from "~/components/ui/skeleton";
 import { campus } from "~/lib/new-util";
-import Link from "next/link";
+import { api } from "~/trpc/react";
 
-type UsageData = {
-  day_of_week: number;
-  room_key: string;
-  sample_count: number | null;
-  time_bucket: string;
-  total_count: number | null;
-}[];
-
-export async function LaundryRoom({
+export default function ClientLaundryRoom({
   roomKey,
-  usage,
+  variant,
 }: {
   roomKey: string;
-  usage: UsageData;
+  variant: "small" | "big";
 }) {
-  const machines = await api.laundry.getFromAPI({
-    key: roomKey,
-  });
+  const { data: machines, isLoading } = api.laundry.getFromAPI.useQuery(
+    {
+      key: roomKey,
+    },
+    { refetchInterval: 1000 * 60 },
+  );
 
-  const chartData = aggregateToHourly(usage);
   const location = campus.getLocationForLaundryKey({ id: roomKey });
 
   if (!location) {
@@ -42,17 +37,43 @@ export async function LaundryRoom({
     );
   }
 
+  if (isLoading) {
+    return (
+      <>
+        <Link
+          href={`#${location.floor.id.toString()}`}
+          className={
+            variant === "small" ? "text-lg font-bold" : "text-2xl font-bold"
+          }
+        >
+          {variant === "small" ? "" : location.building.displayName}
+          {variant === "small" ? "" : " "}
+          {location.floor.displayName}
+        </Link>
+        <div className="flex flex-wrap gap-4">
+          <Skeleton className="h-28 w-80"></Skeleton>
+          <Skeleton className="h-28 w-80"></Skeleton>
+          <Skeleton className="h-28 w-80"></Skeleton>
+          <Skeleton className="h-28 w-80"></Skeleton>
+        </div>
+      </>
+    );
+  }
+
   return (
     <section className="flex flex-col gap-4" id={location.floor.id.toString()}>
       <Link
         href={`#${location.floor.id.toString()}`}
-        className="text-lg font-bold"
+        className={
+          variant === "small" ? "text-lg font-bold" : "text-2xl font-bold"
+        }
       >
+        {variant === "small" ? "" : location.building.displayName}
+        {variant === "small" ? "" : " "}
         {location.floor.displayName}
       </Link>
       <div className="flex flex-wrap gap-4">
-        <UsageChart chartData={chartData} />
-        {machines.map((machine) => {
+        {(machines ?? []).map((machine) => {
           return (
             <Card key={machine.identifier} className="w-80">
               <CardHeader>

@@ -1,5 +1,13 @@
 # Changelog
 
+### November 29, 2025: Simplifications
+
+- Removed announcement bar about the database being wiped for summer.
+- Removed unpopulated usage analytics charts (no longer being tracked).
+  - Might return in the future with a new look.
+- Shows the laundry room closest to your floor if you have your building and floor information saved on the homescreen.
+- Automatically updates the progressbars and minutes remaining without needing a refresh.
+
 ### May 23, 2025: See Closest Laundry Room
 
 - After setting your location, a button appears which directs to the nearest laundry room.

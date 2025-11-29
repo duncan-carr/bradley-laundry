@@ -4,5 +4,5 @@ import { type Database } from "./database.types";
 
 export const supabase = createClient<Database>(
   env.SUPABASE_URL,
-  env.SUPABASE_SERVICE_ROLE_KEY,
+  env.SUPABASE_SECRET_KEY,
 );
