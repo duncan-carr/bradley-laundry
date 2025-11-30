@@ -7,6 +7,7 @@
   - Might return in the future with a new look.
 - Shows the laundry room closest to your floor if you have your building and floor information saved on the homescreen.
 - Automatically updates the progressbars and minutes remaining without needing a refresh.
+- Machine license plates can now be easily copied, and the UI for the license plate has been updated.
 
 ### May 23, 2025: See Closest Laundry Room
 

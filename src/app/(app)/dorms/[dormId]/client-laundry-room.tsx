@@ -1,15 +1,16 @@
 "use client";
 
+import { Check, Clipboard } from "lucide-react";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
+import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
 import { Skeleton } from "~/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import { campus } from "~/lib/new-util";
 import { api } from "~/trpc/react";
 
@@ -20,6 +21,13 @@ export default function ClientLaundryRoom({
   roomKey: string;
   variant: "small" | "big";
 }) {
+  const [copiedPlate, setCopiedPlate] = useState<string | null>(null);
+  useEffect(() => {
+    if (!copiedPlate) return;
+    const timer = setTimeout(() => setCopiedPlate(null), 2000);
+    return () => clearTimeout(timer);
+  }, [copiedPlate]);
+
   const { data: machines, isLoading } = api.laundry.getFromAPI.useQuery(
     {
       key: roomKey,
@@ -78,15 +86,43 @@ export default function ClientLaundryRoom({
             <Card key={machine.identifier} className="w-80">
               <CardHeader>
                 <CardTitle>
-                  {machine.type.slice(0, 1).toUpperCase() +
-                    machine.type.slice(1)}
+                  <div className="flex flex-row items-center justify-between">
+                    <span>
+                      {machine.type.slice(0, 1).toUpperCase() +
+                        machine.type.slice(1)}
+                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          onClick={() => {
+                            void navigator.clipboard.writeText(
+                              machine.licensePlate,
+                            );
+                            setCopiedPlate(machine.licensePlate);
+                          }}
+                          className="bg-accent flex items-center gap-1 rounded-sm px-2 py-1 text-xs"
+                        >
+                          {copiedPlate === machine.licensePlate ? (
+                            <Check className="text-accent-foreground size-3" />
+                          ) : (
+                            <Clipboard className="text-accent-foreground size-3" />
+                          )}
+                          <p className="font-light">{machine.licensePlate}</p>
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>
+                          {copiedPlate === machine.licensePlate
+                            ? "Copied!"
+                            : "Copy to clipboard"}
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                 </CardTitle>
-                <CardDescription>
-                  {machine.identifier}: {machine.licensePlate}
-                </CardDescription>
               </CardHeader>
-              <CardContent>
-                {machine.status === "in-use" && (
+              {machine.status === "in-use" && (
+                <CardContent>
                   <div className="flex flex-col items-center justify-center gap-1">
                     <p className="text-sm">
                       {machine.timeRemaining === 1
@@ -102,8 +138,8 @@ export default function ClientLaundryRoom({
                       }
                     />
                   </div>
-                )}
-              </CardContent>
+                </CardContent>
+              )}
             </Card>
           );
         })}
