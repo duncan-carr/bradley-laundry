@@ -1,29 +1,38 @@
 "use client";
 
+import { ArrowRight, MapPin } from "lucide-react";
+import Link from "next/link";
 import { useLocationStore } from "~/lib/laundry-util";
 import { campus } from "~/lib/new-util";
 import { WelcomeDialog } from "./welcome-dialog";
 import { Button } from "./ui/button";
 import ClientLaundryRoom from "~/app/(app)/dorms/[dormId]/client-laundry-room";
-import Link from "next/link";
 
 export default function GetStarted({}) {
   const locationStore = useLocationStore();
 
+  // No location set - show full hero CTA
   if (!locationStore.building || !locationStore.floor) {
     return (
-      <div>
-        <h1 className="mt-4 text-4xl font-bold text-pretty">
-          Do your laundry the smart way
-        </h1>
-        <p className="my-2 max-w-xl text-lg font-light">
-          Select your building and your floor number to let us find your closest
-          open machine for you, or select your building to see all machines.
-        </p>
-        <div className="py-2 pb-10">
-          <WelcomeDialog />
+      <section className="relative border-b border-border/40 px-4 py-10 md:px-6 md:py-14">
+        <div className="relative max-w-xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary">
+            Bradley University
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+            Find open machines,
+            <br />
+            <span className="text-muted-foreground">skip the wait.</span>
+          </h1>
+          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+            Set your building and floor to instantly see the nearest available
+            washers and dryers.
+          </p>
+          <div className="mt-6">
+            <WelcomeDialog />
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -31,18 +40,25 @@ export default function GetStarted({}) {
 
   if (!building) {
     return (
-      <div>
-        <h1 className="mt-4 text-4xl font-bold text-pretty">
-          Do your laundry the smart way
-        </h1>
-        <p className="my-2 max-w-xl text-lg font-light">
-          Select your building and your floor number to let us find your closest
-          open machine for you, or select your building to see all machines.
-        </p>
-        <div className="py-2 pb-10">
-          <WelcomeDialog />
+      <section className="relative border-b border-border/40 px-4 py-10 md:px-6 md:py-14">
+        <div className="relative max-w-xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary">
+            Bradley University
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+            Find open machines,
+            <br />
+            <span className="text-muted-foreground">skip the wait.</span>
+          </h1>
+          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+            Set your building and floor to instantly see the nearest available
+            washers and dryers.
+          </p>
+          <div className="mt-6">
+            <WelcomeDialog />
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
@@ -52,57 +68,82 @@ export default function GetStarted({}) {
 
   if (!floor) {
     return (
-      <div>
-        <h1 className="mt-4 text-4xl font-bold text-pretty">
-          Do your laundry the smart way
-        </h1>
-        <p className="my-2 max-w-xl text-lg font-light">
-          You&apos;ve set your building to be {building.displayName}, but we do
-          not have information on your floor. A challenging feat!
-        </p>
-        <div className="py-2 pb-10">
-          <WelcomeDialog text="Edit Location" />
+      <section className="relative border-b border-border/40 px-4 py-10 md:px-6 md:py-14">
+        <div className="relative max-w-xl">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-primary">
+            Bradley University
+          </p>
+          <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
+            Find open machines,
+            <br />
+            <span className="text-muted-foreground">skip the wait.</span>
+          </h1>
+          <p className="mt-3 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+            You&apos;ve set your building to{" "}
+            <span className="font-semibold text-foreground">
+              {building.displayName}
+            </span>
+            , but we don&apos;t have info on your floor.
+          </p>
+          <div className="mt-6">
+            <WelcomeDialog text="Edit Location" />
+          </div>
         </div>
-      </div>
+      </section>
     );
   }
 
   const closestLaundryFloor = building.getClosestLaundryFloor(floor.id);
 
   return (
-    <div>
-      <h1 className="mt-4 text-4xl font-bold text-pretty">
-        Do your laundry the smart way
-      </h1>
-      <p className="my-2 max-w-160 text-lg font-light">
-        Currently, you are set to live on{" "}
-        <span className="font-bold">
-          {building.displayName} {floor.displayName}
-        </span>
-        . Soon, this information will be used to automatically find the nearest
-        open machines.
-      </p>
-      <div className="flex items-center gap-2">
-        <Button asChild>
-          <Link href={`/dorms/${building.id}`}>See your building</Link>
-        </Button>
-        <WelcomeDialog variant="outline" text="Edit Location" />
+    <section className="border-b border-border/40">
+      {/* Compact hero when location is set */}
+      <div className="px-4 py-6 md:px-6 md:py-8">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <div className="mb-1.5 flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+              <MapPin className="size-3" />
+              <span>Your location</span>
+            </div>
+            <h1 className="text-xl font-bold tracking-tight md:text-2xl">
+              {building.displayName}
+              <span className="font-normal text-muted-foreground">
+                {" "}&middot; {floor.displayName}
+              </span>
+            </h1>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <Button asChild size="sm" className="h-8 text-xs">
+                <Link href={`/dorms/${building.id}`}>
+                  See all rooms
+                  <ArrowRight className="ml-1 size-3" />
+                </Link>
+              </Button>
+              <WelcomeDialog variant="outline" text="Edit" />
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="py-6 pb-10">
-        {closestLaundryFloor ? (
+
+      {/* Nearest laundry room preview */}
+      {closestLaundryFloor ? (
+        <div className="px-4 pb-6 md:px-6">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+            Nearest laundry room
+          </p>
           <ClientLaundryRoom
             variant="big"
             roomKey={closestLaundryFloor.laundryRoomId!}
           />
-        ) : (
-          // <Button asChild>
-          //   <Link href={`/dorms/${building.id}#${closestLaundryFloor.id}`}>
-          //     See closest laundry room
-          //   </Link>
-          // </Button>
-          <Button>See {building.displayName}&apos;s laundry rooms</Button>
-        )}
-      </div>
-    </div>
+        </div>
+      ) : (
+        <div className="px-4 pb-6 md:px-6">
+          <Button asChild variant="outline" size="sm">
+            <Link href={`/dorms/${building.id}`}>
+              See {building.displayName}&apos;s laundry rooms
+            </Link>
+          </Button>
+        </div>
+      )}
+    </section>
   );
 }

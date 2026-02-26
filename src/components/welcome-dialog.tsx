@@ -1,5 +1,6 @@
 "use client";
 
+import { Building2, MapPin } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
@@ -86,19 +87,29 @@ export function WelcomeDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant={variant}>{text}</Button>
+        <Button variant={variant} size="sm" className="h-8 text-xs">
+          {variant === "default" && <MapPin className="mr-1.5 size-3.5" />}
+          {text}
+        </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Let&apos;s set up your profile</DialogTitle>
-          <DialogDescription>
-            Your information is stored in your browser, never by us. You can
-            update these at any time.
+      <DialogContent className="sm:max-w-[400px]">
+        <DialogHeader className="space-y-2">
+          <div className="mx-auto flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <Building2 className="size-5" />
+          </div>
+          <DialogTitle className="text-center text-base">
+            Set your location
+          </DialogTitle>
+          <DialogDescription className="text-center text-xs">
+            Stored locally in your browser. Update anytime.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex w-full flex-col gap-4 py-4">
-          <div className="flex w-full flex-col gap-2">
-            <Label htmlFor="building">Building</Label>
+
+        <div className="flex w-full flex-col gap-4 py-3">
+          <div className="flex w-full flex-col gap-1.5">
+            <Label htmlFor="building" className="text-xs font-semibold">
+              Building
+            </Label>
             <Select
               value={formState.building}
               onValueChange={handleBuildingChange}
@@ -130,8 +141,10 @@ export function WelcomeDialog({
           </div>
 
           {formState.building && (
-            <div className="flex w-full flex-col gap-2">
-              <Label htmlFor="floor">Floor</Label>
+            <div className="animate-fade-in-up flex w-full flex-col gap-1.5">
+              <Label htmlFor="floor" className="text-xs font-semibold">
+                Floor
+              </Label>
               <Select value={formState.floor} onValueChange={handleFloorChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select a floor" />
@@ -147,11 +160,12 @@ export function WelcomeDialog({
             </div>
           )}
         </div>
-        <DialogFooter className="flex flex-row justify-between">
+        <DialogFooter className="flex flex-row justify-between gap-2">
           {(building || floor) && (
             <Button
               size="sm"
               variant="destructive"
+              className="h-8 text-xs"
               onClick={() => {
                 setBuilding(undefined);
                 setFloor(undefined);
@@ -169,6 +183,7 @@ export function WelcomeDialog({
             size="sm"
             onClick={handleSave}
             disabled={!formState.building || !formState.floor}
+            className="ml-auto h-8 text-xs"
           >
             Save changes
           </Button>

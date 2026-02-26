@@ -1,7 +1,7 @@
 import "~/styles/globals.css";
 
 import { type Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "~/components/theme-provider";
@@ -17,23 +17,22 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-geist-sans",
+  variable: "--font-jakarta",
 });
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${jakarta.variable}`} suppressHydrationWarning>
       <body>
         <Analytics />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange
         >
           <TRPCReactProvider>{children}</TRPCReactProvider>
         </ThemeProvider>
